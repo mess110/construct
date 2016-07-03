@@ -47,6 +47,8 @@ class Api {
   getGames(callback) {
     var json = angular.copy(this.options);
     json.team_builder_type = 'game';
+    json.status = 'lobby';
+    json.__sort = { created_at: 'desc' };
     jNorthPole.getStorage(json, callback, this.error);
   }
 
@@ -64,7 +66,7 @@ class Api {
     json.team_builder_type = 'action';
     json.gameId = gameId;
     json.__limit = 10;
-    json.__sort = { created_at: 'desc' }
+    json.__sort = { created_at: 'desc' };
     jNorthPole.getStorage(json, callback, this.error);
   }
 

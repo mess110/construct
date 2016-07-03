@@ -14,12 +14,12 @@ guid = function() {
 };
 
 function getRandomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 Array.prototype.shuffle = function() {
   var array, i, m, t;
-  for (array = this, m = array.length, t = void 0, i = void 0; m; ) i = Math.floor(Math.random() * m--),
+  for (array = this, m = array.length, t = void 0, i = void 0; m; ) i = Math.floor(Math.random() * m--);
   t = array[m], array[m] = array[i], array[i] = t;
   return array;
 }
@@ -36,6 +36,10 @@ app.config(function($routeProvider) {
   .when('/lobby/:id', {
     templateUrl : 'lobby.html',
     controller  : 'LobbyController'
+  })
+  .when('/cleanup', {
+    templateUrl : 'cleanup.html',
+    controller  : 'CleanupController'
   })
   .when('/games/:id', {
     templateUrl : 'game.html',
@@ -57,8 +61,8 @@ app.controller('MainController', function ($scope, $location) {
 
   var options = {
     api_key: 'teambuilder',
-    secret: 'teambuilder',
-    version: 4
+  secret: 'teambuilder',
+  version: 4
   };
   $scope.api = new Api(options);
 
@@ -80,7 +84,7 @@ app.controller('LandingController', function ($scope) {
 });
 app.controller('LobbyController', function ($scope, $routeParams, $interval) {
   $scope.startGame = function () {
-    $scope.game.status = 'play'
+    $scope.game.status = 'play';
 
     $scope.game.players = [];
     for (var i = 0, l = $scope.players.length; i < l; i++) {
@@ -89,7 +93,7 @@ app.controller('LobbyController', function ($scope, $routeParams, $interval) {
     }
 
     $scope.gameMaker = new GameMaker({ size: $scope.game.players.length });
-    $scope.game.maker = $scope.gameMaker.toJson()
+    $scope.game.maker = $scope.gameMaker.toJson();
 
     $scope.api.updateGame($scope.game, function (game) {
       $interval.cancel($scope.playersPromise);
@@ -143,6 +147,20 @@ app.controller('GamesController', function ($scope) {
   };
 });
 
+app.controller('CleanupController', function ($scope, $routeParams, $interval) {
+  $scope.api.getGames(function (games) {
+    for (var i = 0, l = games.length; i < l; i++) {
+      var v = games[i];
+      if ((Date.now() / 1000) - v.created_at > 3600) {
+        v.status = 'finished';
+        $scope.api.updateGame(v, function (game) {
+          console.log(game);
+        });
+      }
+    }
+  });
+})
+
 app.controller('GameController', function ($scope, $routeParams, $interval) {
   $scope.uiRows = [];
   $scope.doneActions = [];
@@ -153,15 +171,9 @@ app.controller('GameController', function ($scope, $routeParams, $interval) {
     console.log($scope.game);
 
     $scope.uiRows = [
-      [
-        $scope.game.maker.buttons[$scope.ownIndex],
-        $scope.game.maker.radios[$scope.ownIndex]
-      ],
-      [
-        $scope.game.maker.switches[$scope.ownIndex],
-        $scope.game.maker.ratings[$scope.ownIndex]
-      ]
-    ]
+      [$scope.game.maker.buttons[$scope.ownIndex],  $scope.game.maker.radios[$scope.ownIndex]],
+      [$scope.game.maker.switches[$scope.ownIndex], $scope.game.maker.ratings[$scope.ownIndex]]
+    ];
     $scope.yourCommands = $scope.game.maker.commands.splice($scope.ownIndex * commandsPerPlayer, commandsPerPlayer);
     $scope.$apply();
   });
@@ -204,6 +216,7 @@ app.controller('GameController', function ($scope, $routeParams, $interval) {
     if (cmd == undefined || cmd == null) {
       return 'no commands';
     }
+
     switch (cmd.type) {
       case 'button':
         return 'quickly ' + cmd.label
@@ -214,12 +227,12 @@ app.controller('GameController', function ($scope, $routeParams, $interval) {
       case 'switch':
           return 'Set ' + cmd.label + ' to ' + cmd.output;
       default:
-        return 'unknown command type';
+          return 'unknown command type';
     }
   };
 
   $scope.goBack = function () {
-    $interval.cancel($scope.actionsInterval)
+    $interval.cancel($scope.actionsInterval);
     $scope.goTo('/');
   }
 });
