@@ -1,0 +1,43 @@
+<div class="jumbotron">
+    <form name="form">
+        <p class="text-center">{{ cmdToHuman(yourCommands[0]) }}</p>
+    </form>
+</div>
+<div class="row" ng-repeat="uiRow in uiRows track by $index">
+    <div class="{{ uiCol.width || 'col-xs-6' }}" ng-repeat="uiCol in uiRow track by $index">
+        <a class="btn btn-default" ng-if="uiCol.type == 'button'" ng-click="click(uiCol)">{{ uiCol.label }}</a>
+        <div ng-if="uiCol.type == 'radio'">
+            <span>{{ uiCol.label }}</span>
+            <br />
+            <div class="btn-group">
+                <label ng-repeat="label in uiCol.labels" class="btn btn-success" ng-model="uiCol.output" ng-click="click(uiCol)" uib-btn-radio="'{{label}}'">{{ label }}</label>
+            </div>
+        </div>
+        <div ng-if="uiCol.type == 'switch'">
+            <switch ng-model="uiCol.output" class="green" ng-change="click(uiCol)"></switch>
+            <span style="position: relative; top: -10px;">{{ uiCol.label }}</span>
+        </div>
+        <div ng-if="uiCol.type == 'rating'">
+            <span>{{ uiCol.label }}</span>
+            <br />
+            <uib-rating ng-model="uiCol.output" max="uiCol.max || 10" state-on="'glyphicon-star'" state-off="'glyphicon-star-empty'" ng-click="click(uiCol)"></uib-rating>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <table class="table">
+            <tbody>
+                <tr ng-repeat="action in actions track by $index">
+                    <td>{{ action.ownId }}</td>
+                    <td>{{ action.target }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <a class="btn btn-default" ng-click="goBack()">back</a>
+    </div>
+</div>
