@@ -44,6 +44,30 @@ class Api {
     jNorthPole.putStorage(json, callback, this.error);
   }
 
+  updateAction(action, callback) {
+    var json = angular.copy(action);
+    json.version = this.options.version;
+    json.api_key = this.options.api_key;
+    json.secret = this.options.secret;
+    jNorthPole.putStorage(json, callback, this.error);
+  }
+
+  getScore(gameId, callback) {
+    var totalScore = 0;
+    var json = angular.copy(this.options);
+    json.team_builder_type = 'action';
+    json.gameId = gameId;
+    jNorthPole.getStorage(json, function (actions) {
+      for (var i = 0, l = actions.length; i < l; i++) {
+        var v = actions[i];
+        if (v.score != undefined && v.score != null) {
+          totalScore += v.score;
+        }
+      }
+      callback(totalScore);
+    }, this.error);
+  }
+
   getGames(callback) {
     var json = angular.copy(this.options);
     json.team_builder_type = 'game';

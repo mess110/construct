@@ -1,43 +1,57 @@
 <div class="jumbotron">
-    <form name="form">
-        <p class="text-center">{{ cmdToHuman(yourCommands[0]) }}</p>
+    <form name="form" ng-if="yourCommands[0]">
+        <p class="text-center no-margin-bottom">{{ cmdToHuman(yourCommands[0]) }}</p>
+        <p class="text-center no-margin-bottom">({{ score }} points)</p>
+        <!-- <uib-progressbar class="progress-striped active" value="dynamic" type="{{type}}"></uib-progressbar> -->
+    </form>
+    <form name="form" ng-if="!yourCommands[0]">
+        <p class="text-center no-margin-bottom">{{ totalScore }} points</p>
     </form>
 </div>
 <div class="row" ng-repeat="uiRow in uiRows track by $index">
     <div class="{{ uiCol.width || 'col-xs-6' }}" ng-repeat="uiCol in uiRow track by $index">
-        <a class="btn btn-default" ng-if="uiCol.type == 'button'" ng-click="click(uiCol)">{{ uiCol.label }}</a>
-        <div ng-if="uiCol.type == 'radio'">
+        <div ng-if="uiCol.type == 'button'" class="text-center">
+            <a class="btn btn-success" ng-click="click(uiCol)" style="position: relative; top: 20px;">{{ uiCol.label }}</a>
+        </div>
+        <div ng-if="uiCol.type == 'radio'" class="text-center">
             <span>{{ uiCol.label }}</span>
             <br />
             <div class="btn-group">
                 <label ng-repeat="label in uiCol.labels" class="btn btn-success" ng-model="uiCol.output" ng-click="click(uiCol)" uib-btn-radio="'{{label}}'">{{ label }}</label>
             </div>
         </div>
-        <div ng-if="uiCol.type == 'switch'">
+        <div ng-if="uiCol.type == 'switch'" class="text-center">
+            <span>{{ uiCol.label }}</span>
+            <br />
             <switch ng-model="uiCol.output" class="green" ng-change="click(uiCol)"></switch>
-            <span style="position: relative; top: -10px;">{{ uiCol.label }}</span>
         </div>
-        <div ng-if="uiCol.type == 'rating'">
+        <div ng-if="uiCol.type == 'rating'" class="text-center">
             <span>{{ uiCol.label }}</span>
             <br />
             <uib-rating ng-model="uiCol.output" max="uiCol.max || 10" state-on="'glyphicon-star'" state-off="'glyphicon-star-empty'" ng-click="click(uiCol)"></uib-rating>
         </div>
     </div>
+    <br />
+    <br />
+    <br />
+    <br />
 </div>
+<div class="row">
+    <div class="col-xs-12 text-center">
+        <a class="btn btn-default" ng-click="goBack()">back</a>
+    </div>
+</div>
+<br />
+<br />
 <div class="row">
     <div class="col-xs-12">
         <table class="table">
             <tbody>
                 <tr ng-repeat="action in actions track by $index">
                     <td>{{ action.ownId }}</td>
-                    <td>{{ action.target }}</td>
+                    <td>{{ cmdToHuman(action.target) }}</td>
                 </tr>
             </tbody>
         </table>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-12">
-        <a class="btn btn-default" ng-click="goBack()">back</a>
     </div>
 </div>

@@ -1,5 +1,5 @@
 body {
-  padding: 10px;
+  padding-top: 16px;
 }
 
 .centered {
@@ -13,4 +13,13 @@ body {
 
 .row {
   padding-bottom: 10px;
+}
+
+.no-margin-bottom {
+  margin-bottom: 0px !important;
+}
+
+.glyphicon {
+  font-size: 18px;
+  color: #5cb85c;
 }

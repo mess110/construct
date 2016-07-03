@@ -24,6 +24,17 @@ Array.prototype.shuffle = function() {
   return array;
 }
 
+function shuffle(a) {
+  var j, x, i;
+  for (i = a.length; i; i -= 1) {
+    j = Math.floor(Math.random() * i);
+    x = a[i - 1];
+    a[i - 1] = a[j];
+    a[j] = x;
+  }
+  return a;
+}
+
 app.config(function($routeProvider) {
   $routeProvider.when('/', {
     templateUrl : 'landing.html',
@@ -85,6 +96,7 @@ app.controller('LandingController', function ($scope) {
 app.controller('LobbyController', function ($scope, $routeParams, $interval) {
   $scope.startGame = function () {
     $scope.game.status = 'play';
+    $scope.game.start_time = Date.now();
 
     $scope.game.players = [];
     for (var i = 0, l = $scope.players.length; i < l; i++) {
@@ -131,7 +143,7 @@ app.controller('LobbyController', function ($scope, $routeParams, $interval) {
   $scope.playersPromise = $interval($scope.refreshPlayers, 1000);
 
   $scope.getGame();
-  $scope.gamePromise = $interval($scope.getGame, 5000);
+  $scope.gamePromise = $interval($scope.getGame, 1000);
 });
 app.controller('GamesController', function ($scope) {
   $scope.api.getGames(function (data) {
@@ -190,6 +202,13 @@ app.controller('GameController', function ($scope, $routeParams, $interval) {
   }
 
   $scope.getActions = function () {
+    $scope.api.getScore($routeParams.id, function (tmpScore) {
+      $scope.totalScore = tmpScore;
+      $scope.$apply();
+    })
+    if ($scope.score == undefined) {
+      $scope.score = 15;
+    }
     $scope.api.getActions($routeParams.id, function (actions) {
       $scope.actions = actions;
       for (var i = 0, l = $scope.actions.length; i < l; i++) {
@@ -198,16 +217,21 @@ app.controller('GameController', function ($scope, $routeParams, $interval) {
           continue;
         }
         if (JSON.stringify(v.target) === JSON.stringify($scope.yourCommands[0]) ) {
-          $scope.yourCommands.shift();
-          console.log('done');
-          $scope.doneActions.push(v.id);
-          break;
-        } else {
-          $scope.doneActions.push(v.id);
+          v.score = $scope.score;
+          $scope.api.updateAction(v, function (action) {
+            $scope.yourCommands.shift();
+            $scope.score = 15;
+            $scope.$apply();
+          })
         }
+        $scope.doneActions.push(v.id);
       }
       $scope.$apply();
     })
+    $scope.score -= 1;
+    if ($scope.score < 0) {
+      $scope.score = 0;
+    }
   }
   $scope.getActions();
   $scope.actionsInterval = $interval($scope.getActions, 1000);
@@ -219,7 +243,7 @@ app.controller('GameController', function ($scope, $routeParams, $interval) {
 
     switch (cmd.type) {
       case 'button':
-        return 'quickly ' + cmd.label
+        return 'Hit the ' + cmd.label + ' button'
       case 'radio':
           return 'Set ' + cmd.label + ' to ' + cmd.output;
       case 'rating':

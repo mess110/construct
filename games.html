@@ -10,7 +10,7 @@
                 <tr ng-repeat="game in games | filter: { name: search, status: 'lobby' } ">
                     <td>{{ game.id }}</td>
                     <td>
-                        <a class="btn btn-default" ng-click="joinGame(game)">join</a>
+                        <a class="btn btn-success" ng-click="joinGame(game)">join</a>
                     </td>
                 </tr>
                 <tr ng-if="games.length == 0">
@@ -20,5 +20,10 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12 text-center">
+        <a class="btn btn-default" ng-click="goTo('/')">back</a>
     </div>
 </div>
