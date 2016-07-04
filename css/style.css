@@ -23,3 +23,7 @@ body {
   font-size: 18px;
   color: #5cb85c;
 }
+
+.ui-col {
+  padding-bottom: 16px;
+}

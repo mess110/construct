@@ -8,10 +8,10 @@
         <p class="text-center no-margin-bottom">{{ totalScore }} points</p>
     </form>
 </div>
-<div class="row" ng-repeat="uiRow in uiRows track by $index">
-    <div class="{{ uiCol.width || 'col-xs-6' }}" ng-repeat="uiCol in uiRow track by $index">
+<div class="row">
+    <div class="{{ uiCol.width || 'col-xs-6' }} ui-col" ng-repeat="uiCol in uiCols track by $index">
         <div ng-if="uiCol.type == 'button'" class="text-center">
-            <a class="btn btn-success" ng-click="click(uiCol)" style="position: relative; top: 20px;">{{ uiCol.label }}</a>
+            <a class="btn btn-success" ng-click="click(uiCol)">{{ uiCol.label }}</a>
         </div>
         <div ng-if="uiCol.type == 'radio'" class="text-center">
             <span>{{ uiCol.label }}</span>
@@ -31,11 +31,8 @@
             <uib-rating ng-model="uiCol.output" max="uiCol.max || 10" state-on="'glyphicon-star'" state-off="'glyphicon-star-empty'" ng-click="click(uiCol)"></uib-rating>
         </div>
     </div>
-    <br />
-    <br />
-    <br />
-    <br />
 </div>
+<br />
 <div class="row">
     <div class="col-xs-12 text-center">
         <a class="btn btn-default" ng-click="goBack()">back</a>

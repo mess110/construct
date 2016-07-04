@@ -116,7 +116,6 @@ app.controller('LobbyController', function ($scope, $routeParams, $interval) {
   }
 
   $scope.refreshPlayers = function () {
-    console.log('refreshing players');
     $scope.api.getPlayers($routeParams.id, function (players) {
       $scope.players = players;
       $scope.$apply();
@@ -174,7 +173,7 @@ app.controller('CleanupController', function ($scope, $routeParams, $interval) {
 })
 
 app.controller('GameController', function ($scope, $routeParams, $interval) {
-  $scope.uiRows = [];
+  $scope.uiCols = [];
   $scope.doneActions = [];
 
   $scope.api.getGame($routeParams.id, function (game) {
@@ -182,10 +181,12 @@ app.controller('GameController', function ($scope, $routeParams, $interval) {
     $scope.ownIndex = $scope.game.players.indexOf($scope.ownId);
     console.log($scope.game);
 
-    $scope.uiRows = [
-      [$scope.game.maker.buttons[$scope.ownIndex],  $scope.game.maker.radios[$scope.ownIndex]],
-      [$scope.game.maker.switches[$scope.ownIndex], $scope.game.maker.ratings[$scope.ownIndex]]
-    ];
+    $scope.uiCols = shuffle([
+      $scope.game.maker.buttons[$scope.ownIndex],
+      $scope.game.maker.radios[$scope.ownIndex],
+      $scope.game.maker.switches[$scope.ownIndex],
+      $scope.game.maker.ratings[$scope.ownIndex]
+    ]);
     $scope.yourCommands = $scope.game.maker.commands.splice($scope.ownIndex * commandsPerPlayer, commandsPerPlayer);
     $scope.$apply();
   });
@@ -210,6 +211,10 @@ app.controller('GameController', function ($scope, $routeParams, $interval) {
       $scope.score = 15;
     }
     $scope.api.getActions($routeParams.id, function (actions) {
+      if ($scope.yourCommands[0] == undefined) {
+        return;
+      }
+
       $scope.actions = actions;
       for (var i = 0, l = $scope.actions.length; i < l; i++) {
         var v = $scope.actions[i];
